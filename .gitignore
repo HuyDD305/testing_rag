@@ -1,0 +1,8 @@
+# Python virtual environment
+.venv/
+rag-app/venv/
+env/
+# Python cache
+__pycache__/
+*.pyc
+rag-app/.env
