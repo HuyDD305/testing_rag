@@ -111,16 +111,9 @@ template = ChatPromptTemplate.from_messages([
 # print(result)
 
 
-from typing_extensions import TypedDict
 
 
-class JobApplicationState(TypedDict):
-    job_description: str
-    is_suitable: bool
-    application: str
 
-
-    
 story_prompt = PromptTemplate.from_template("Write a short story about {topic} in less than 50 words.")
 
 story_chain = story_prompt | llm_service.llm | StrOutputParser()
