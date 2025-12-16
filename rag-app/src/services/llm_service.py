@@ -110,6 +110,17 @@ template = ChatPromptTemplate.from_messages([
 # result = chain.invoke({"text": "LangChain is a framework for developing applications powered by language models. It enables developers to build applications that can interact with users, process data, and perform complex tasks using natural language."})
 # print(result)
 
+
+from typing_extensions import TypedDict
+
+
+class JobApplicationState(TypedDict):
+    job_description: str
+    is_suitable: bool
+    application: str
+
+
+    
 story_prompt = PromptTemplate.from_template("Write a short story about {topic} in less than 50 words.")
 
 story_chain = story_prompt | llm_service.llm | StrOutputParser()

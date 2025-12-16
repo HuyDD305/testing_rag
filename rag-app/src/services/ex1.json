@@ -1,0 +1,84 @@
+[
+  {
+    "node": "retrieve_schema",
+    "ms": 380,
+    "input": {
+      "question": "Context (5 turns gần nhất):\nuser: List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy.\n\nCâu hỏi hiện tại: List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy."
+    },
+    "output": {
+      "tables_found": 5,
+      "relevant_tables": [
+        "results",
+        "match",
+        "satscores",
+        "player",
+        "driverstandings"
+      ],
+      "scores": [
+        { "table": "results", "score": 0.434 },
+        { "table": "match", "score": 0.429 },
+        { "table": "satscores", "score": 0.401 },
+        { "table": "player", "score": 0.401 },
+        { "table": "driverstandings", "score": 0.399 }
+      ]
+    }
+  },
+  {
+    "node": "analyze_schema",
+    "ms": 2811,
+    "llm_prompt": "Phân tích câu hỏi và xác định bảng cần query trong database.\nCâu hỏi: Context (5 turns gần nhất):\nuser: List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy.\nCác bảng liên quan (từ RAG): results, match, satscores, player, driverstandings\nChi tiết Schema của các bảng: ...",
+    "llm_response": {
+      "tables": ["player"],
+      "primary_columns": { "player": ["player_name", "height"] },
+      "foreign_keys": [],
+      "join_paths": [],
+      "where_conditions": ["height > 180"],
+      "order_by": ["avg_heading_accuracy DESC"],
+      "date_format": "N/A",
+      "aggregation_logic": "AVG heading_accuracy per player",
+      "summary": "Filter player by height, compute average heading accuracy, list top 10 names",
+      "notes": "heading_accuracy column missing"
+    },
+    "input": {
+      "question": "List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy.",
+      "use_schema_rag": true,
+      "input_tables": ["player"]
+    },
+    "output": {
+      "tables": ["player"],
+      "summary": "Filter player by height, compute average heading accuracy, list top 10 names",
+      "notes": "heading_accuracy column missing",
+      "join_paths": []
+    }
+  },
+  {
+    "node": "retrieve_rag",
+    "ms": 364,
+    "input": {
+      "question": "List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy."
+    },
+    "output": {
+      "examples_found": 0,
+      "examples": []
+    }
+  },
+  {
+    "node": "generate_sql",
+    "ms": 3349,
+    "llm_prompt": "Sinh SQL query chính xác từ câu hỏi tự nhiên và trả về kết quả dưới dạng JSON.\nInput:\n- Câu hỏi: List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy.\n- Schema: Table public.player with columns player_api_id, player_name, height, etc.\n- Phân tích chi tiết: WHERE height > 180, ORDER BY avg_heading_accuracy DESC\n- Notes: heading_accuracy column missing",
+    "llm_response": {
+      "sql": null,
+      "chart_type": "table",
+      "error": "Column 'heading_accuracy' does not exist in the provided schema, so the requested ordering by average heading accuracy cannot be performed."
+    },
+    "input": {
+      "question": "List the top 10 players' names whose heights are above 180 in descending order of average heading accuracy.",
+      "relevant_tables": ["player"],
+      "similar_examples_count": 0
+    },
+    "output": {
+      "sql": "",
+      "chart_type": "table"
+    }
+  }
+]

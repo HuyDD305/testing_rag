@@ -1,0 +1,97 @@
+[
+  {
+    "node": "retrieve_schema",
+    "ms": 370,
+    "input": {
+      "question": "Find the average number of long-shot done by Ahmed Samir Farag."
+    },
+    "output": {
+      "tables_found": 5,
+      "relevant_tables": [
+        "match",
+        "posts",
+        "player_attributes",
+        "team_attributes",
+        "users"
+      ],
+      "scores": [
+        { "table": "match", "score": 0.381 },
+        { "table": "posts", "score": 0.359 },
+        { "table": "player_attributes", "score": 0.344 },
+        { "table": "team_attributes", "score": 0.333 },
+        { "table": "users", "score": 0.316 }
+      ]
+    }
+  },
+  {
+    "node": "analyze_schema",
+    "ms": 3396,
+    "llm_response": {
+      "tables": ["player_attributes", "player"],
+      "primary_columns": {
+        "player_attributes": ["player_api_id", "long_shots"],
+        "player": ["player_api_id", "player_name"]
+      },
+      "foreign_keys": [
+        {
+          "from": "player_attributes.player_api_id",
+          "to": "player.player_api_id",
+          "relationship": "many-to-one"
+        }
+      ],
+      "join_paths": [
+        "player_attributes JOIN player ON player_attributes.player_api_id = player.player_api_id"
+      ],
+      "where_conditions": [
+        "player.player_name = 'Ahmed Samir Farag'",
+        "player_attributes.long_shots IS NOT NULL"
+      ],
+      "order_by": [],
+      "date_format": "N/A (no date column needed)",
+      "aggregation_logic": "AVG of long_shots for the player",
+      "summary": "Use player_attributes.long_shots joined to player by player_api_id, filter by name, compute average.",
+      "notes": "long_shots is a rating attribute, not a match count"
+    },
+    "input": {
+      "question": "Find the average number of long-shot done by Ahmed Samir Farag.",
+      "use_schema_rag": true,
+      "input_tables": ["player_attributes", "player"]
+    },
+    "output": {
+      "tables": ["player_attributes", "player"],
+      "summary": "Use player_attributes.long_shots joined to player by player_api_id, filter by name, compute average.",
+      "notes": "long_shots is a rating attribute, not a match count",
+      "join_paths": [
+        "player_attributes JOIN player ON player_attributes.player_api_id = player.player_api_id"
+      ]
+    }
+  },
+  {
+    "node": "retrieve_rag",
+    "ms": 867,
+    "input": {
+      "question": "Find the average number of long-shot done by Ahmed Samir Farag."
+    },
+    "output": {
+      "examples_found": 0,
+      "examples": []
+    }
+  },
+  {
+    "node": "generate_sql",
+    "ms": 1209,
+    "llm_response": {
+      "sql": "SELECT AVG(pa.long_shots) AS average_long_shots\nFROM public.player_attributes pa\nJOIN public.player p ON pa.player_api_id = p.player_api_id\nWHERE p.player_name = 'Ahmed Samir Farag'\n  AND pa.long_shots IS NOT NULL;",
+      "chart_type": "table"
+    },
+    "input": {
+      "question": "Find the average number of long-shot done by Ahmed Samir Farag.",
+      "relevant_tables": ["player_attributes", "player"],
+      "similar_examples_count": 0
+    },
+    "output": {
+      "sql": "SELECT AVG(pa.long_shots) AS average_long_shots\nFROM public.player_attributes pa\nJOIN public.player p ON pa.player_api_id = p.player_api_id\nWHERE p.player_name = 'Ahmed Samir Farag'\n  AND pa.long_shots IS NOT NULL;",
+      "chart_type": "table"
+    }
+  }
+]
