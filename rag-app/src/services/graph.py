@@ -1,20 +1,29 @@
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
-from typing import Literal
+from typing import Literal, Annotated, Optional, Union
+from operator import add
 
+
+def my_reducer(left: list[str], right: Optional[Union[str, list[str]]]) -> list[str]:
+    if right:
+        return left + [right] if isinstance(right, str) else left + right
+    return left
 
 class JobApplicationState(TypedDict):
     job_description: str
     is_suitable: bool
     application: str
+    actions: Annotated[list[str], my_reducer]
+
+
 
 def analyze_job_description(state):
     print("Analyzing job description...")
-    return {"is_suitable": len(state["job_description"]) > 100}
+    return {"is_suitable": len(state["job_description"]) > 100, "actions": ["analyze_job_description"]}
 
 def generate_application(state):
     print("Generating job application...")
-    return {"application": "some_fake_application_based_on_description"}
+    return {"application": "some_fake_application_based_on_description", "actions": ["generate_application"]}
 
 def is_suitable(state) -> Literal["generate_application", "__end__"]:
     if state.get("is_suitable"):
